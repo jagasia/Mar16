@@ -1,0 +1,236 @@
+In the example, we have seen, 
+	Kaleshwar has modified the servlet code to prove that his servlet is fast.
+
+It is not good idea to modify the servlet code for non functional requirements.
+
+Filter is introduced.
+
+Filters intercepts the request and response flow between
+	client and servlet
+
+Filter can do many things:
+	1) allow or reject the request or response
+	2) monitor the performance metrics		(we have done that now)
+	3) log the activities	
+			at this moment requrest has come,
+			at this moment response has come
+
+A filter can intercept Many servlets
+	how is it possible?		
+		we can specify an url pattern of servlets		/*	means all servlets
+A filter can choose to intercept only
+	REQUESTS			general request like calling a servlet by URL
+	INCLUDES			request dispatcher .include
+	FORWARDS			request dispatcher.forward
+
+Many filters can intercept one servlet
+
+----------------How to create filter?--------------
+
+Old way:
+
+Create a class that implements Filter
+	override the doFilter method
+	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+
+
+configure this class as a filter in "web.xml" and define the url pattern to specify which are the servlets to intercept and what type of requests.
+
+New way:
+
+Create a class that implements Filter
+	override the doFilter method
+
+Use annotation to do the same
+
+
+Task:
+	create a servlet that displays "Welcome to Home page".
+
+	create a jsp file that will accept user id and password and submit form to servlet.
+
+	use filter to authenticate 
+		uid:	rama
+		pwd:	ravi
+	if login is not successful, filter displays "failure" message and reject access to servlet
+	if login is successful, allow access to servlet.
+
+Hint:
+	to create filter, 
+		1) right click project, new filter
+		2) choose url pattern as 
+			/*
+			tick all access like REQUEST, FORWARD....
+
+	USE request and response objects of doFilter method
+
+web.xml		(filter is configured in xml file)
+
+
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- <!DOCTYPE web-app PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.2//EN" "http://java.sun.com/j2ee/dtds/web-app_2_2.dtd"> -->
+<web-app>
+	<display-name>mar-16-filter-old</display-name>
+	<servlet>
+		<servlet-name>MyServlet</servlet-name>
+		<display-name>MyServlet</display-name>
+		<description></description>
+		<servlet-class>controller.MyServlet</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>MyServlet</servlet-name>
+		<url-pattern>/MyServlet</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>MyServlet</servlet-name>
+		<url-pattern>/ms</url-pattern>
+	</servlet-mapping>
+	<servlet-mapping>
+		<servlet-name>MyServlet</servlet-name>
+		<url-pattern>/ms.do</url-pattern>
+	</servlet-mapping>
+	<filter>  
+<filter-name>f1</filter-name>  
+<filter-class>filters.MyFilter</filter-class>  
+</filter>  
+   
+<filter-mapping>  
+<filter-name>f1</filter-name>  
+<url-pattern>/*</url-pattern>  
+</filter-mapping>  
+  
+</web-app>
+
+
+Task:
+	to create a filter in old way, (using web.xml)
+
+	create a class and implements Filter interface, override doFilter method
+
+	call the chain.doFilter method in some point in the method
+
+	configure the filter in web.xml
+
+	run the servlet.
+
+
+
+/mar-16-login-filter/JagServlet
+/mar-16-login-filter/login.jsp
+
+
+--------------------------------------------------------------
+
+1) create User class (mapped to User_Master table)
+2) signup.jsp should capture the user master information and submit to a servlet
+3) SignupServlet	(signup)	should store a row in user master table
+4) LoginServlet 	(login)		should validate uid, pwd in user master table
+5) on login success, an user object should be stored in the session
+	in every page, first, we check if session attribute "user" object is null or not.
+	if null, ask them to login first
+	if not null, then check the role. based on role (user.getRole()), we allow them to see page or not.
+	if allowed, welcome them by user.getFirstName()
+6) on logout, the servlet calls session.invalidate()		this destroys all session attributes.
+
+
+
+
+alter table user_master add (status varchar2(50) default 'pending');
+
+
+suresh kumar is a valid user.
+	His login is successful.
+But he is not admin. So he is not allowed to access "associate2.jsp"
+
+Authentication
+	checks if they are a valid user or not
+Authorization
+	checks if that valid user is allowed to perform this action or not (access control)
+Impersonation
+	acting on behalf of another	(money is debited from your account by BookMyShow on behalf of you)
+
+
+Task:
+	create 
+		signup
+		login
+		signout
+
+	Based on user's role, allow only certain pages.
+	ex:	admin can access all pages
+		users can access only 
+			about us
+			contact us
+			home
+
+
+
+CTRL+SHIFT+/		comment
+
+
+Maven:
+
+We use lot of jar files in our project
+
+android-2.2.1.jar
+apache-commons.jar
+gson-2.2.2.jar
+jstl-1.2.jar
+ojdbc8.jar
+
+we use 5 jar files here.
+
+sometimes, when using hibernate or spring framework, there will be lot of jar files.
+
+It is difficult to manage the versions of the jar files.
+
+Lets us learn to create a project using maven.
+Steps to install maven:
+
+1) download maven for your platform (windows or mac)
+2) open cmd
+	type command:			mvn -v
+
+
+1) extract to a folder
+2) c:\program files
+		create a folder
+	Apache Software Foundation
+3) inside this, paste the folder that was extracted
+4) copy the folder that contains
+		bin and lib
+
+create a system env variable
+1)	M2_HOME
+		C:\Program Files\Apache Software 			Foundation\apache-maven-3.3.1 
+2)	M2
+		%M2_HOME%\bin
+
+3)	MAVEN_OPTS
+		-Xms256m -Xmx512m
+
+4)	Path variable
+		add this %M2% at the bottom
+
+
+In maven there are many arche types
+
+	quick start		for core java
+
+	MS Office is a group
+	MS Word is a artifact	
+
+pom.xml		is Project Object Model
+
+
+for every jar file we use in our project, there will be a maven dependency tags
+	
+------------------------------------------------------------------------------
+1) Project should contain
+	i) Sign up form
+	ii) Login form
+	iii) Logout option
+	iv) common menu
+	v) many pages and atleast 1 CRUD page
+	vi) only admin can access the CRUD pages
+	
